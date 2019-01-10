@@ -1,0 +1,16 @@
+version: "3"
+services:
+  forms:
+    build: .
+    depends_on:
+    - master
+    environment:
+    - REDIS_URI=rd:6379
+    - REDIS_MASTER_NAME=mymaster
+    - REDIS_SENTINELS=127.0.0.1:26379
+    ports:
+    - "8080:8080"
+  master:
+    image: redis
+    ports:
+    - "6380:6379"
