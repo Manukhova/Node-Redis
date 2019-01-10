@@ -16,6 +16,7 @@
     "prettier-eslint": "^8.8.1"
   },
   "dependencies": {
+    "express": "^4.16.2",
     "ioredis": "^4.0.0",
     "winston": "^3.0.0"
   },

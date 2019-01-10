@@ -1,5 +1,3 @@
-const path = require('path');
-
 module.exports = {
 	parserOptions: {
 		ecmaVersion: 8,

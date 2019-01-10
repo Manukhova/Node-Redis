@@ -1,12 +1,6 @@
-FROM node:carbon
+FROM node:9.11.2-jessie
 
-WORKDIR usr/src/ajson-forms-app
-
-RUN mkdir ./.logs
-
-COPY package*.json ./
-
-RUN npm install --only=production
+WORKDIR usr/src/node-redis-app
 
 COPY . .
 

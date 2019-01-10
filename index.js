@@ -1,7 +1,6 @@
 const app = require('./src/app');
 
-try {
-  app.run();
-} catch (err) {
-  console.error(err);
-}
+app.run().catch(err => {
+  console.error(`${err}, ${new Date()}`);
+  process.exit(1);
+});

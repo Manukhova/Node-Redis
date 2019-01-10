@@ -1,30 +1,14 @@
 const Redis = require('ioredis');
-const dbConfig = require('../configs/db');
 
-const REDIS_EXPIRE_SEC = 5700; // 95 min
+const REDIS_EXPIRE_SEC = 1000;
 
 class RedisClient {
   constructor() {
     this.client = null;
   }
 
-  static makeSentObj(sents) {
-    return sents.map(item => ({
-      host: item.split(':')[0],
-      port: parseInt(item.split(':')[1], 10)
-    }));
-  }
-
   async connect() {
-    const sentinels = RedisClient.makeSentObj(dbConfig.redisSentinels.split(','));
-
-    this.client = new Redis({
-      sentinels,
-      name: dbConfig.redisMasterName
-    });
-
-    // this.client = new Redis(); - DEV mode
-
+    this.client = new Redis();
     return this.client;
   }
 
