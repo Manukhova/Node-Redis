@@ -90,6 +90,18 @@ class RedisClient {
     });
   }
 
+  async lRangeAsync(list, start, end) {
+    return new Promise(async (resolve, reject) => {
+      this.client.lrange(list, start, end, (err, results) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(results);
+      });
+    });
+  }
+
   async deleteAsync(key) {
     return new Promise(async (resolve, reject) => {
       this.client.del(key, (err, results) => {

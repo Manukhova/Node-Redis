@@ -6,6 +6,7 @@ const { getRandomString } = require('../configs/helpers');
 class RedisPubClient {
   constructor() {
     this.pubClient = null;
+    this.messageIntervalId = null;
   }
 
   async getPub(channel) {
@@ -19,10 +20,7 @@ class RedisPubClient {
   async quitPub(channel) {
     logger.info(`${text.CLOSE_CHANNEL} ${channel}`);
 
-    clearInterval(this.messageIntervalId);
-
     this.pubClient.disconnect();
-
     this.pubClient.quit();
   }
 }

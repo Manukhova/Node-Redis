@@ -14,6 +14,8 @@ const text = {
   CLOSE_CHANNEL: 'CLOSE_CHANNEL'
 };
 
+const GET_ERR_FLAG = '--getErrors';
+
 const REDIS_EXPIRE_SEC = 1000;
 
 const MESSAGE_INTERVAL = 500;
@@ -33,5 +35,6 @@ module.exports = {
   MESSAGE_TYPE,
   MESSAGE_INTERVAL,
   REDIS_EXPIRE_SEC,
+  GET_ERR_FLAG,
   MAX_RANDOM_STRING_LENGTH
 };
