@@ -33,9 +33,7 @@ const onMsgHandler = async (chan, message) => {
     logger.error(text.FAILED_CONNECT_REDIS, err);
   });
 
-  if (!valueFromList) {
-    return;
-  }
+  if (!valueFromList) return;
 
   if (Math.random() * 100 <= 95) {
     logger.info(`${text.MESSAGE_PROCESSED}: ${valueFromList} ${new Date()}`);

@@ -24,7 +24,7 @@ const MESSAGE_INTERVAL = 500;
 
 const CHECK_INTERVAL = 500;
 
-const MAX_RANDOM_STRING_LENGTH = 10;
+const MAX_RANDOM_STRING_LENGTH = 100;
 
 const CHANNEL_NAME = 'MessageChannel';
 
