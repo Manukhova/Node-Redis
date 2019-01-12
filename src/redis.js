@@ -18,9 +18,7 @@ class RedisClient {
       .filter(it => it !== MESSAGE_LIST)
       .map(async key => {
         const msgValue = await this.getAsync(key);
-
         await this.deleteAsync(key);
-
         return msgValue;
       });
 
