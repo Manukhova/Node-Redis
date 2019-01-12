@@ -77,16 +77,12 @@ const run = async () => {
   sub.on('message', onMsgHandler);
 
   const checkIntervalId = setInterval(async () => {
-    const listArr = await redisClient.lRangeAsync(MESSAGE_LIST, 0, -1).catch(err => {
-     logger.error(text.FAILED_CONNECT_REDIS, err);
-   });
-
    const lastMsgDate = Date.now() - MESSAGE_INTERVAL;
 
-   if (!listArr.length && heartbeatTimestamp < lastMsgDate) {
+   if (heartbeatTimestamp < lastMsgDate) {
       pub.publish(CHANNEL_NAME, NO_PUB_MESSAGE_TYPE);
       logger.info(`${text.NO_PUB_MESSAGE_PUBLISHED} ${new Date()}`);
-      
+
       if (isPub) return;
 
       if (Object.keys(sub.subscription_set).length) {
