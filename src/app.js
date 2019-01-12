@@ -11,6 +11,7 @@ const {
   CHECK_INTERVAL,
   MESSAGE_TYPE,
   PUB_MESSAGE_TYPE,
+  NO_PUB_MESSAGE_TYPE,
   GET_ERR_FLAG
 } = require('../configs/config');
 
@@ -22,6 +23,12 @@ let isPub = false;
 const onMsgHandler = async (chan, message) => {
   if (message === PUB_MESSAGE_TYPE) {
     isPub = true;
+    return;
+  }
+
+  if (message === NO_PUB_MESSAGE_TYPE) {
+    isPub = false;
+    return;
   }
 
   if (message !== MESSAGE_TYPE) return;
@@ -71,23 +78,23 @@ const run = async () => {
 
   const checkIntervalId = setInterval(async () => {
     const listArr = await redisClient.lRangeAsync(MESSAGE_LIST, 0, -1).catch(err => {
-      logger.error(text.FAILED_CONNECT_REDIS, err);
-    });
+     logger.error(text.FAILED_CONNECT_REDIS, err);
+   });
 
-    const lastMsgDate = Date.now() - MESSAGE_INTERVAL;
+   const lastMsgDate = Date.now() - MESSAGE_INTERVAL;
 
-    if (!listArr.length && heartbeatTimestamp < lastMsgDate) {
-      isPub = false;
+   if (!listArr.length && heartbeatTimestamp < lastMsgDate) {
+      pub.publish(CHANNEL_NAME, NO_PUB_MESSAGE_TYPE);
+      logger.info(`${text.NO_PUB_MESSAGE_PUBLISHED} ${new Date()}`);
+      
+      if (isPub) return;
 
       if (Object.keys(sub.subscription_set).length) {
         await redisSubClient.quitSub(CHANNEL_NAME);
       }
 
-      await redisClient.deleteAsync(MESSAGE_LIST);
-
       pub.publish(CHANNEL_NAME, PUB_MESSAGE_TYPE);
       logger.info(`${text.PUB_MESSAGE_PUBLISHED} ${new Date()}`);
-      isPub = true;
 
       if (messageIntervalId) return;
 
