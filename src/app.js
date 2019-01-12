@@ -77,18 +77,13 @@ const run = async () => {
     const lastMsgDate = Date.now() - MESSAGE_INTERVAL;
 
     if (!listArr.length && heartbeatTimestamp < lastMsgDate) {
-
-      if (isPub) return;
+      isPub = false;
 
       if (Object.keys(sub.subscription_set).length) {
         await redisSubClient.quitSub(CHANNEL_NAME);
       }
 
       await redisClient.deleteAsync(MESSAGE_LIST);
-
-      const listArr1 = await redisClient.lRangeAsync(MESSAGE_LIST, 0, -1).catch(err => {
-        logger.error(text.FAILED_CONNECT_REDIS, err);
-      });
 
       pub.publish(CHANNEL_NAME, PUB_MESSAGE_TYPE);
       logger.info(`${text.PUB_MESSAGE_PUBLISHED} ${new Date()}`);
