@@ -11,15 +11,12 @@ class RedisPubClient {
 
   async getPub(channel) {
     this.pubClient = redis.createClient();
-
     logger.info(`${text.OPEN_CHANNEL} ${channel}`);
-
     return this.pubClient;
   }
 
   async quitPub(channel) {
     logger.info(`${text.CLOSE_CHANNEL} ${channel}`);
-
     this.pubClient.disconnect();
     this.pubClient.quit();
   }

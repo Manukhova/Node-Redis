@@ -6,9 +6,8 @@ class RedisClient {
     this.client = null;
   }
 
-  connect() {
+  create() {
     this.client = redis.createClient();
-
     return this.client;
   }
 

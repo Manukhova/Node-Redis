@@ -1,8 +1,6 @@
 {
-  "name": "ajson-forms",
-  "version": "0.0.2",
-  "description": "Proxy service for processing website forms data",
-  "private": true,
+  "name": "node-redis",
+  "version": "0.0.1",
   "main": "index.js",
   "devDependencies": {
     "colors": "^1.3.3",

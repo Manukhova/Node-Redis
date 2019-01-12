@@ -9,26 +9,31 @@ class RedisSubClient {
 
   async getSub(channel) {
     this.subClient = redis.createClient();
-
     const sub = await this.subscribeAsync(channel);
-
-    if (!sub) return null;
-
     logger.info(`${text.SUBSCRIBED_TO_CHANNEL} ${sub}`);
-
     return this.subClient;
   }
 
   async quitSub(channel) {
-    logger.info(`${text.CLOSE_CHANNEL} ${channel}`);
-
-    this.subClient.unsubscribe();
-    this.subClient.quit();
+    await this.unsubscribeAsync(channel);
+    logger.info(`${text.UNSUBSCRIBE} ${channel}`);
   }
 
   async subscribeAsync(chan) {
     return new Promise(async (resolve, reject) => {
       this.subClient.subscribe(chan, (err, results) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(results);
+      });
+    });
+  }
+
+  async unsubscribeAsync(chan) {
+    return new Promise(async (resolve, reject) => {
+      this.subClient.unsubscribe(chan, (err, results) => {
         if (err) {
           reject(err);
           return;
