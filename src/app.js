@@ -8,7 +8,6 @@ const {
   CHANNEL_NAME,
   MESSAGE_LIST,
   MESSAGE_INTERVAL,
-  CHECK_INTERVAL,
   MESSAGE_TYPE,
   PUB_MESSAGE_TYPE,
   NO_PUB_MESSAGE_TYPE,
@@ -16,7 +15,6 @@ const {
 } = require('../configs/config');
 
 let messageIntervalId = null;
-let checkIntervalId = null;
 let heartbeatTimestamp = 0;
 let isPub = false;
 
@@ -77,9 +75,9 @@ const run = async () => {
   sub.on('message', onMsgHandler);
 
   const checkIntervalId = setInterval(async () => {
-   const lastMsgDate = Date.now() - MESSAGE_INTERVAL;
+    const lastMsgDate = Date.now() - MESSAGE_INTERVAL;
 
-   if (heartbeatTimestamp < lastMsgDate) {
+    if (heartbeatTimestamp < lastMsgDate) {
       pub.publish(CHANNEL_NAME, NO_PUB_MESSAGE_TYPE);
       logger.info(`${text.NO_PUB_MESSAGE_PUBLISHED} ${new Date()}`);
 
@@ -111,7 +109,7 @@ const run = async () => {
     clearInterval(checkIntervalId);
   });
 
-  client.on('error', function (err) {
+  client.on('error', err => {
     sub.off('message', onMsgHandler);
     clearInterval(messageIntervalId);
     clearInterval(checkIntervalId);

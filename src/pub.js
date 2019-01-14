@@ -1,12 +1,10 @@
 const redis = require('redis');
 const logger = require('../configs/logger');
-const { text, MESSAGE_LIST, MESSAGE_INTERVAL } = require('../configs/config');
-const { getRandomString } = require('../configs/helpers');
+const { text } = require('../configs/config');
 
 class RedisPubClient {
   constructor() {
     this.pubClient = null;
-    this.messageIntervalId = null;
   }
 
   async getPub(channel) {
