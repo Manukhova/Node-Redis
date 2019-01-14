@@ -2,7 +2,7 @@ const logger = require('../configs/logger');
 const redisClient = require('./redis');
 const redisSubClient = require('./sub');
 const redisPubClient = require('./pub');
-const { getRandomString } = require('../configs/helpers');
+const generateMsg = require('./generate');
 const {
   text,
   CHANNEL_NAME,
@@ -51,6 +51,28 @@ const onMsgHandler = async (chan, message) => {
   });
 };
 
+const checkForPub = async (sub, pub) => {
+  const lastMsgDate = Date.now() - MESSAGE_INTERVAL;
+
+  if (heartbeatTimestamp < lastMsgDate) {
+    pub.publish(CHANNEL_NAME, NO_PUB_MESSAGE_TYPE);
+    logger.info(`${text.NO_PUB_MESSAGE_PUBLISHED} ${new Date()}`);
+
+    if (isPub) return;
+
+    if (Object.keys(sub.subscription_set).length) {
+      await redisSubClient.quitSub(CHANNEL_NAME);
+    }
+
+    pub.publish(CHANNEL_NAME, PUB_MESSAGE_TYPE);
+    logger.info(`${text.PUB_MESSAGE_PUBLISHED} ${new Date()}`);
+
+    if (messageIntervalId) return;
+
+    messageIntervalId = setInterval(generateMsg, MESSAGE_INTERVAL, redisClient, pub);
+  }
+};
+
 const run = async () => {
   const client = redisClient.create();
 
@@ -74,34 +96,7 @@ const run = async () => {
 
   sub.on('message', onMsgHandler);
 
-  const checkIntervalId = setInterval(async () => {
-    const lastMsgDate = Date.now() - MESSAGE_INTERVAL;
-
-    if (heartbeatTimestamp < lastMsgDate) {
-      pub.publish(CHANNEL_NAME, NO_PUB_MESSAGE_TYPE);
-      logger.info(`${text.NO_PUB_MESSAGE_PUBLISHED} ${new Date()}`);
-
-      if (isPub) return;
-
-      if (Object.keys(sub.subscription_set).length) {
-        await redisSubClient.quitSub(CHANNEL_NAME);
-      }
-
-      pub.publish(CHANNEL_NAME, PUB_MESSAGE_TYPE);
-      logger.info(`${text.PUB_MESSAGE_PUBLISHED} ${new Date()}`);
-
-      if (messageIntervalId) return;
-
-      messageIntervalId = setInterval(async () => {
-        const message = getRandomString();
-        await redisClient.rPushAsync(MESSAGE_LIST, message).catch(err => {
-          logger.error(text.FAILED_CONNECT_REDIS, err);
-        });
-        pub.publish(CHANNEL_NAME, MESSAGE_TYPE);
-        logger.info(`${text.MESSAGE_PUBLISHED}: ${message} ${new Date()}`);
-      }, MESSAGE_INTERVAL);
-    }
-  }, MESSAGE_INTERVAL - 1);
+  const checkIntervalId = setInterval(checkForPub, MESSAGE_INTERVAL - 1, sub, pub);
 
   client.on('end', () => {
     sub.off('message', onMsgHandler);
